@@ -9,6 +9,7 @@ type CompanyRepository interface {
 	FindById(id uint) (*entity.Company, error)
 	Create(params CompanyCreateParams) (*entity.Company, error)
 	Update(id uint, params CompanyUpdateParams) (*entity.Company, error)
+	Delete(id uint) error
 }
 
 type CompanyDB struct {
@@ -68,4 +69,14 @@ func (c *CompanyDB) Update(id uint, params CompanyUpdateParams) (*entity.Company
 	err = c.db.Model(company).Updates(&params).Error
 
 	return company, err
+}
+
+func (c *CompanyDB) Delete(id uint) error {
+	company, err := c.FindById(id)
+	if err != nil {
+		return err
+	}
+
+	err = c.db.Delete(company).Error
+	return err
 }
