@@ -4,6 +4,7 @@ import (
 	"github.com/jeff-rdg/carcontrol/entity"
 	"github.com/jeff-rdg/carcontrol/util"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"testing"
 )
 
@@ -76,4 +77,16 @@ func TestCompanyDB_FindById(t *testing.T) {
 	assert.Equal(t, company.Phone, result.Phone)
 	assert.Equal(t, company.QtdCarVacancy, result.QtdCarVacancy)
 	assert.Equal(t, company.QtdMotorcycleVacancy, result.QtdMotorcycleVacancy)
+}
+
+func TestCompanyDB_Delete(t *testing.T) {
+	company := createRandomCompany(t)
+
+	err := cdb.Delete(company.ID)
+	assert.NoError(t, err)
+
+	findCompanyDeleted, err := cdb.FindById(company.ID)
+	assert.Empty(t, findCompanyDeleted)
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
 }
