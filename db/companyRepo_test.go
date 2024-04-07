@@ -62,3 +62,18 @@ func TestCompanyDB_Update(t *testing.T) {
 	assert.NotZero(t, result.CreatedAt)
 
 }
+
+func TestCompanyDB_FindById(t *testing.T) {
+	company := createRandomCompany(t)
+
+	result, err := cdb.FindById(company.ID)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, company.Name, result.Name)
+	assert.Equal(t, company.Cnpj, result.Cnpj)
+	assert.Equal(t, company.Address, result.Address)
+	assert.Equal(t, company.Phone, result.Phone)
+	assert.Equal(t, company.QtdCarVacancy, result.QtdCarVacancy)
+	assert.Equal(t, company.QtdMotorcycleVacancy, result.QtdMotorcycleVacancy)
+}
