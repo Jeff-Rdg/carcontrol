@@ -6,8 +6,9 @@ import (
 )
 
 type CompanyRepository interface {
-	FindById(id uint) (entity.Company, error)
-	Create(params CompanyCreateParams) (entity.Company, error)
+	FindById(id uint) (*entity.Company, error)
+	Create(params CompanyCreateParams) (*entity.Company, error)
+	Update(id uint, params CompanyUpdateParams) (*entity.Company, error)
 }
 
 type CompanyDB struct {
@@ -18,8 +19,8 @@ func NewCompanyRepository(db *gorm.DB) CompanyRepository {
 	return &CompanyDB{db: db}
 }
 
-func (c *CompanyDB) FindById(id uint) (entity.Company, error) {
-	var company entity.Company
+func (c *CompanyDB) FindById(id uint) (*entity.Company, error) {
+	var company *entity.Company
 	err := c.db.First(&company, id).Error
 
 	return company, err
@@ -34,8 +35,8 @@ type CompanyCreateParams struct {
 	QtdMotorcycleVacancy uint   `json:"qtd_motorcycle_vacancy"`
 }
 
-func (c *CompanyDB) Create(params CompanyCreateParams) (entity.Company, error) {
-	company := entity.Company{
+func (c *CompanyDB) Create(params CompanyCreateParams) (*entity.Company, error) {
+	company := &entity.Company{
 		Name:                 params.Name,
 		Cnpj:                 params.Cnpj,
 		Address:              params.Address,
@@ -44,7 +45,27 @@ func (c *CompanyDB) Create(params CompanyCreateParams) (entity.Company, error) {
 		QtdMotorcycleVacancy: params.QtdMotorcycleVacancy,
 	}
 
-	err := c.db.Create(&company).Error
+	err := c.db.Create(company).Error
+
+	return company, err
+}
+
+type CompanyUpdateParams struct {
+	Name                 string `json:"name"`
+	Cnpj                 string `json:"cnpj"`
+	Address              string `json:"address"`
+	Phone                string `json:"phone"`
+	QtdCarVacancy        uint   `json:"qtd_car_vacancy"`
+	QtdMotorcycleVacancy uint   `json:"qtd_motorcycle_vacancy"`
+}
+
+func (c *CompanyDB) Update(id uint, params CompanyUpdateParams) (*entity.Company, error) {
+	company, err := c.FindById(id)
+	if err != nil {
+		return company, err
+	}
+
+	err = c.db.Model(company).Updates(&params).Error
 
 	return company, err
 }
