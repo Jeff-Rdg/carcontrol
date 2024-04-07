@@ -1,18 +1,20 @@
 package db
 
 import (
+	"github.com/jeff-rdg/carcontrol/entity"
+	"github.com/jeff-rdg/carcontrol/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestCompanyDB_Create(t *testing.T) {
+func createRandomCompany(t *testing.T) entity.Company {
 	testCase := CompanyCreateParams{
-		Name:                 "test",
-		Cnpj:                 "12345678912345",
-		Address:              "Rua x",
-		Phone:                "859123456878",
-		QtdCarVacancy:        5,
-		QtdMotorcycleVacancy: 5,
+		Name:                 util.RandomName(),
+		Cnpj:                 util.RandomCnpj(),
+		Address:              util.RandomAddress(),
+		Phone:                util.RandomPhone(),
+		QtdCarVacancy:        util.RandomVacancy(),
+		QtdMotorcycleVacancy: util.RandomVacancy(),
 	}
 
 	result, err := cdb.Create(testCase)
@@ -26,5 +28,11 @@ func TestCompanyDB_Create(t *testing.T) {
 	assert.Equal(t, testCase.QtdCarVacancy, result.QtdCarVacancy)
 	assert.Equal(t, testCase.QtdMotorcycleVacancy, result.QtdMotorcycleVacancy)
 	assert.NotZero(t, result.CreatedAt)
+
+	return result
+}
+
+func TestCompanyDB_Create(t *testing.T) {
+	createRandomCompany(t)
 
 }
